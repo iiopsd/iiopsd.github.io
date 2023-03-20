@@ -1,0 +1,153 @@
+html,body{
+    margin: 0;
+    padding: 0;
+}
+/*满天星*/
+audio{
+    z-index: 5;
+    position: absolute;
+    bottom: 0;
+    opacity: 0.1;
+    -webkit-transition: all 2s;
+    -moz-transition: all 2s;
+    -ms-transition: all 2s;
+    -o-transition: all 2s;
+    transition: all 2s;
+}
+audio:hover{
+    opacity: 1;
+}
+.wall{
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+div#background{
+    background: url("./img/preview.jpg")no-repeat;
+    -webkit-animation: dd 100s linear infinite;
+    -moz-animation: dd 100s linear infinite;
+    -o-animation: dd 100s linear infinite;
+    animation: dd 100s linear infinite;
+    background-size: cover;
+}
+div#midground{
+    background: url("./img/midground.png");
+    z-index: 1;
+    -webkit-animation: cc 100s linear infinite;
+    -moz-animation: cc 100s linear infinite;
+    -o-animation: cc 100s linear infinite;
+    animation: cc 100s linear infinite;
+}
+div#foreground{
+    background: url("./img/foreground.png");
+    z-index: 2;
+    -webkit-animation: cc 153s linear infinite;
+    -o-animation: cc 153s linear infinite;
+    -moz-animation: cc 153s linear infinite;
+    animation: cc 153s linear infinite;
+}
+div#top{
+    background: url("../img/midground.png");
+    z-index: 4;
+    -webkit-animation: dd 100s linear infinite;
+    -o-animation: dd 100s linear infinite;
+    animation: da 100s linear infinite;
+}
+#text{
+	font-family: 'Share Tech Mono', monospace;
+    color: #ffffff;
+    text-align: center;
+    position: absolute;
+    left: 20%;
+    top: 40%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    color: #daf6ff;
+    /*text-shadow: 0 0 20px #0aafe6;*/
+	font-size: 80px;
+
+}
+#author{
+	font-family: 'Share Tech Mono', monospace;
+    color: #ffffff;
+    text-align: center;
+    position: absolute;
+    left: 25%;
+    top: 55%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    color: #daf6ff;
+    /*text-shadow: 0 0 20px #0aafe6;*/
+	font-size: 40px;
+
+}
+@-webkit-keyframes cc {
+    from{
+        background-position: 0 0;
+        transform: translateY(10px);
+    }
+    to{
+        background-position: 600% 0;
+    }
+}
+@-o-keyframes cc {
+    from{
+        background-position: 0 0;
+        transform: translateY(10px);
+    }
+    to{
+        background-position: 600% 0;
+    }
+}
+@-moz-keyframes cc {
+    from{
+        background-position: 0 0;
+        transform: translateY(10px);
+    }
+    to{
+        background-position: 600% 0;
+    }
+}
+@keyframes cc {
+    0%{
+        background-position: 0 0;
+    }
+    100%{
+        background-position: 600% 0;
+    }
+}
+
+@keyframes da {
+    0%{
+        background-position: 0 0;
+    }
+    100%{
+        background-position: 0 600%;
+    }
+}
+@-webkit-keyframes da {
+    0%{
+        background-position: 0 0;
+    }
+    100%{
+        background-position: 0 600%;
+    }
+}
+@-moz-keyframes da {
+    0%{
+        background-position: 0 0;
+    }
+    100%{
+        background-position: 0 600%;
+    }
+}
+@-ms-keyframes da {
+    0%{
+        background-position: 0 0;
+    }
+    100%{
+        background-position: 0 600%;
+    }
+}
