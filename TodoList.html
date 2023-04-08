@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Todo List</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-image: url("https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7bfed17aeb2c4734ab59e471292549d7~tplv-k3u1fbpfcp-watermark.image");
+            background-repeat: no-repeat;
+        }
+
+        canvas {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 70px;
+        }
+
+        form {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        label {
+            font-size: 18px;
+            margin-right: 10px;
+            line-height: 30px;
+        }
+
+        input[type="text"] {
+            font-size: 18px;
+            padding: 5px;
+            border: none;
+            border-radius: 3px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        button {
+            font-size: 18px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 8px 15px;
+            margin-left: 10px;
+            cursor: pointer;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+            opacity: 0.4;
+        }
+
+        button:hover {
+            background-color: #3e8e41;
+        }
+
+        ul {
+            list-style-type: none;
+            margin: 30px auto;
+            padding: 0;
+            width: 600px;
+        }
+
+        li {
+            font-size: 18px;
+            line-height: 30px;
+            padding: 5px;
+            border-radius: 3px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+            margin-bottom: 10px;
+            background-color: rgba(255, 255, 255, 0.5);
+            opacity: 0.8;
+        }
+
+        .delete {
+            color: red;
+            cursor: pointer;
+        }
+
+        .delete:hover {
+            text-decoration: underline;
+        }
+
+        .completed {
+            text-decoration: line-through;
+            color: gray;
+        }
+
+
+        .header {
+            font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+            font-size: 50px;
+            font-weight: 100;
+            letter-spacing: 2px;
+            text-align: center;
+            color: #f35626;
+            background-image: -webkit-linear-gradient(92deg, #f35626, #feab3a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            -webkit-animation: hue 10s infinite linear;
+        }
+
+        @-webkit-keyframes hue {
+            from {
+                -webkit-filter: hue-rotate(0deg);
+            }
+            to {
+                -webkit-filter: hue-rotate(-360deg);
+            }
+        }
+
+        label {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #71abe7;
+            opacity: 0.6;
+        }
+
+        input {
+            opacity: 0.3;
+        }
+
+    </style>
+</head>
+
+<body>
+<canvas id="snowCanvas"></canvas>
+
+<h1 class="header">ToDoList</h1>
+
+<form novalidate onkeydown="if(event.keyCode==13){return false;}">
+    <label for="todoContent">New task:</label>
+    <input type="text" id="todoContent">
+    <button id="addButton" type="button" onclick="addItem()">Add</button>
+</form>
+<ul id="task-list">
+</ul>
+
+<script>
+    // 创建画布对象
+    var canvas = document.getElementById("snowCanvas");
+    var ctx = canvas.getContext("2d");
+
+    // 设置画布大小
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // 定义雪花数组
+    var flakes = [];
+    for (var i = 0; i < 50; i++) {
+        flakes.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            r: Math.random() * 4 + 1, // 半径随机值
+            d: Math.random() * 10 // 密度随机值
+        });
+    }
+
+    // 绘制雪花函数
+    function drawFlakes() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "white";
+        ctx.beginPath();
+        for (var i = 0; i < flakes.length; i++) {
+            var flake = flakes[i];
+            ctx.moveTo(flake.x, flake.y);
+            ctx.arc(flake.x, flake.y, flake.r, 0, Math.PI * 2, true);
+        }
+        ctx.fill();
+        moveFlakes(); // 移动雪花
+    }
+
+    // 移动雪花函数
+    function moveFlakes() {
+        for (var i = 0; i < flakes.length; i++) {
+            var flake = flakes[i];
+            // 雪花半径越大，下落速度越快
+            flake.y += Math.pow(flake.r, 2) / 100;
+            if (flake.y > canvas.height) {
+                flakes[i] = {
+                    x: Math.random() * canvas.width,
+                    y: 0,
+                    r: flake.r,
+                    d: flake.d
+                };
+            }
+        }
+    }
+
+    // 每隔30毫秒绘制一次雪花
+    setInterval(drawFlakes, 10);
+
+    // ----------------------------------------------------
+
+    var taskList = [];
+    var num = 0;
+
+    function addItem() {
+        if(taskList.length > 12){
+            alert("做完再加吧");
+            return;
+        }
+        // 获取输入框中的内容
+        var newItem = document.getElementById("todoContent").value.trim();
+
+        if (newItem.length === 0) {
+            return; // 如果没有输入任务，则不执行后面的代码
+        }
+
+        // 创建新的任务项li元素
+        var li = document.createElement("li");
+        li.innerHTML = `
+          <span class="completed" onclick="toggleComplete('li' + ${num})"><svg t="1680861418049" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1913" width="18" height="18"><path d="M722.500267 330.888533l-273.408 273.408-147.729067-147.729066a42.018133 42.018133 0 1 0-59.426133 59.426133l177.425066 177.493333a41.984 41.984 0 0 0 59.426134 0L781.9264 390.314667a42.001067 42.001067 0 0 0-59.392-59.426134h-0.034133zM78.506667 783.496533a508.279467 508.279467 0 0 0 319.0784 226.986667C530.773333 1041.066667 667.886933 1017.924267 783.701333 945.390933a508.279467 508.279467 0 0 0 226.986667-319.0784 508.279467 508.279467 0 0 0-65.058133-386.116266C848.554667 85.367467 681.710933 0.341333 511.214933 0.341333a508.6208 508.6208 0 0 0-270.813866 77.960534A36.864 36.864 0 0 0 279.552 140.629333C484.113067 12.288 755.029333 74.581333 883.268267 279.278933a434.9952 434.9952 0 0 1 55.739733 330.5472 435.029333 435.029333 0 0 1-194.3552 273.134934 435.746133 435.746133 0 0 1-330.581333 55.773866A435.165867 435.165867 0 0 1 140.936533 744.379733a436.770133 436.770133 0 0 1-5.666133-456.055466 36.829867 36.829867 0 0 0-63.317333-37.546667A510.1568 510.1568 0 0 0 78.506667 783.530667v-0.034134z" p-id="1914" fill="#707070"></path></svg></span>
+          <span>${newItem}</span>
+          <span class="delete" style="float: right;" onclick="removeItem('li' + ${num})"><svg t="1680859611392" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1481" width="18" height="18"><path d="M292.571429 1024a146.285714 146.285714 0 0 1-146.285715-146.285714V219.428571H54.857143a54.857143 54.857143 0 0 1 0-109.714285H438.857143V73.142857a73.142857 73.142857 0 1 1 146.285714 0v36.571429h384a54.857143 54.857143 0 1 1 0 109.714285H877.714286v658.285715a146.285714 146.285714 0 0 1-146.285715 146.285714H292.571429z m-36.571429-150.381714c0 19.968 12.946286 36.571429 29.988571 40.009143L292.571429 914.285714h160.914285V219.428571H256v654.189715zM768 219.428571H570.514286v694.857143H731.428571c17.92 0 32.914286-14.409143 35.986286-33.353143l0.585143-7.314285V219.428571z" p-id="1482" fill="#707070"></path></svg></span>
+        `;
+
+        li.setAttribute('id', 'li' + num);
+        // 将任务项li元素添加到任务列表ul元素中
+        var ul = document.getElementById("task-list");
+        ul.appendChild(li);
+
+        // 将新任务添加到任务列表中
+        taskList.push({
+            name: newItem,
+            completed: false,
+        });
+
+        // 清空输入框中的内容
+        document.getElementById("todoContent").value = "";
+        num += 1;
+    }
+
+    function removeItem(id) {
+        var index = 0;
+        // 删除对应的任务项
+        var list = document.querySelectorAll("#task-list li");
+        for (let i = 0; i < list.length; i++) {
+            var t = list[i];
+            if (t.id === id) {
+                index = i;
+                break;
+            }
+        }
+        list[index].remove();
+
+        // 从任务列表中删除对应的任务
+        taskList.splice(index, 1);
+    }
+
+    function toggleComplete(id) {
+        var index = 0;
+        // 删除对应的任务项
+        var list = document.querySelectorAll("#task-list li");
+        for (let i = 0; i < list.length; i++) {
+            var t = list[i];
+            if (t.id === id) {
+                index = i;
+                break;
+            }
+        }
+        // 切换任务完成状态
+        taskList[index].completed = !taskList[index].completed;
+
+        // 切换任务项样式
+        var li = document.querySelectorAll("#task-list li")[index];
+        if (taskList[index].completed) {
+            li.classList.add("completed");
+        } else {
+            li.classList.remove("completed");
+        }
+    }
+
+    const input = document.getElementById("todoContent");
+    const button = document.getElementById("addButton");
+    // 监听输入框的 keydown 事件
+    input.addEventListener("keydown", function(event) {
+        // 判断按下的键是否为回车键（keyCode 为13）
+        if (event.keyCode === 13) {
+            // 模拟按钮的点击事件
+            button.click();
+        }
+    });
+</script>
+</body>
+
+</html>
